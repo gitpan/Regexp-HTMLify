@@ -1,6 +1,6 @@
 # Regexp::HTMLify.pm
 
-# Copyright (c) 2008 Niels van Dijke <CpanDotOrgAtPerlboyDotNet> http://PerlBoy.net
+# Copyright (c) 2008-2011 Niels van Dijke <PerlboyAtCpanDotOrg> http://PerlBoy.net
 # All rights reserved. This program is free software.
 #
 # You may distribute under the terms of either the GNU General Public
@@ -17,7 +17,7 @@ use Carp 'croak';
 use CGI qw/:standard/;
 
 use vars qw($VERSION);
-$VERSION = sprintf('%d.%03d', q$Revision: 0.1 $ =~ m#(\d+)\.(\d+)#);
+$VERSION = sprintf('%d.%03d', q$Revision: 0.002 $ =~ m#(\d+)\.(\d+)#);
 
 use vars qw($MAXCOLORS $CSS_COLORMAP);
 
@@ -30,20 +30,22 @@ sub HTMLifyREmatches ($;\@$$);
 
 @ISA = qw(Exporter);
 @EXPORT = qw(
-  HTMLifyGetColormapCSS
-  HTMLifyRE
-  HTMLifyREmatches
+	HTMLifyGetColormapCSS
+	HTMLifyRE
+	HTMLifyREmatches
 );
 
 sub HTMLifyGetColormapCSS (;$$) {
   my $fHandle = $_[0];
   my $prefix = defined($_[1]) ? $_[1] : 'cDef';
 
+  local $_;
+
   if (!defined $fHandle) {
     if (!defined $CSS_COLORMAP) {
       $fHandle = *Regexp::HTMLify::DATA;
     } else {
-	  # hide $CSS_COLORMAP and return cached version
+      # hide $CSS_COLORMAP and return cached version
       return $CSS_COLORMAP;
     }
   }
@@ -65,6 +67,11 @@ sub HTMLifyRE ($;\@$$) {
   my $varnames = shift || [];
   my $startColorIndex = defined $_[0] ? $_[0] : 1;
   my $cssClass = defined $_[1] ? $_[1] : 'cDef';
+
+  local $_;
+
+  # perl 5.12 qr((.)) => '(?-xism:(.))'
+  # perl 5.14 qr((.)) => '(?:(.))'
  
   # No support for code execution in regexp
   no re 'eval'; 
@@ -125,6 +132,8 @@ sub HTMLifyREmatches ($;\@$$) {
   my $startColorIndex = defined $_[0] ? $_[0] : 1;
   my $cssClass = defined $_[1] ? $_[1] : 'cDef';
 
+  local $_;
+
   my @c = split(//,$var);
   for (my $i = 1; $i < scalar(@-); $i++) {
     next if !defined $-[$i];
@@ -139,13 +148,13 @@ sub HTMLifyREmatches ($;\@$$) {
 
 _init();
 
+
 =head1 NAME
 
 Regexp::HTMLify - Highlight regular expression capture buffers and matches using HTML and CSS
 
 =head1 SYNOPSIS
 
-    use CGI qw/:standard/;
     use Regexp::HTMLify;
 
     my $re = qr((?i)(This) (?!and not that )(will match));
@@ -165,13 +174,6 @@ Regexp::HTMLify - Highlight regular expression capture buffers and matches using
 	
     print end_html;
 
-=begin html
-
-<p>The above example will produce the following HTML:</p>
-
-<!--   Default colormap of Perl library Regexp:HTMLify   by Niels van Dijke / http://PerlBoy.net   based on: http://www.visibone.com/colorlab--><style type="text/css">.cDef0{color:#f00; background-color: rgba(255,255,255,0.2);}.cDef1{color:#fff;background-color:#936;}.cDef2{color:#fff;background-color:#639;}.cDef3{color:#fff;background-color:#369;}.cDef4{color:#fff;background-color:#396;}.cDef5{color:#fff;background-color:#693;}.cDef6{color:#fff;background-color:#963;}.cDef7{color:#fff;background-color:#c06;}.cDef8{color:#fff;background-color:#60c;}.cDef9{color:#fff;background-color:#06c;}.cDef10{color:#fff;background-color:#0c6;}.cDef11{color:#fff;background-color:#6c0;}.cDef12{color:#fff;background-color:#c60;}.cDef13{color:#fff;background-color:#c69;}.cDef14{color:#fff;background-color:#96c;}.cDef15{color:#fff;background-color:#69c;}.cDef16{color:#fff;background-color:#6c9;}.cDef17{color:#fff;background-color:#9c6;}.cDef18{color:#fff;background-color:#c96;}.cDef19{color:#000;background-color:#f39;}.cDef20{color:#000;background-color:#93f;}.cDef21{color:#000;background-color:#39f;}.cDef22{color:#000;background-color:#3f9;}.cDef23{color:#000;background-color:#9f3;}.cDef24{color:#000;background-color:#f93;}.cDef25{color:#000;background-color:#f9c;}.cDef26{color:#000;background-color:#c9f;}.cDef27{color:#000;background-color:#9cf;}.cDef28{color:#000;background-color:#9fc;}.cDef29{color:#000;background-color:#cf9;}.cDef30{color:#000;background-color:#fc9;}.cDef31{color:#000;background-color:#fcc;}.cDef32{color:#000;background-color:#fcf;}.cDef33{color:#000;background-color:#ccf;}.cDef34{color:#000;background-color:#cff;}.cDef35{color:#000;background-color:#cfc;}.cDef36{color:#000;background-color:#ffc;}.cDef37{color:#000;background-color:#f00;}.cDef38{color:#000;background-color:#f0f;}.cDef39{color:#000;background-color:#00f;}.cDef40{color:#000;background-color:#0ff;}.cDef41{color:#000;background-color:#0f0;}.cDef42{color:#000;background-color:#ff0;}.cDef43{color:#fff;background-color:#c00;}.cDef44{color:#fff;background-color:#c0c;}.cDef45{color:#fff;background-color:#00c;}.cDef46{color:#fff;background-color:#0cc;}.cDef47{color:#fff;background-color:#0c0;}.cDef48{color:#fff;background-color:#cc0;}.cDef49{color:#fff;background-color:#900;}.cDef50{color:#fff;background-color:#909;}.cDef51{color:#fff;background-color:#009;}.cDef52{color:#fff;background-color:#099;}.cDef53{color:#fff;background-color:#090;}.cDef54{color:#fff;background-color:#990;}.cDef55{color:#000;background-color:#c66;}.cDef56{color:#000;background-color:#c6c;}.cDef57{color:#000;background-color:#66c;}.cDef58{color:#000;background-color:#6cc;}.cDef59{color:#000;background-color:#6c6;}.cDef60{color:#000;background-color:#cc6;}.cDef61{color:#000;background-color:#966;}.cDef62{color:#000;background-color:#969;}.cDef63{color:#000;background-color:#669;}.cDef64{color:#000;background-color:#699;}.cDef65{color:#000;background-color:#696;}.cDef66{color:#000;background-color:#996;}</style><p>Regexp:  (?-xism:(?i)<span class="cDef0">(<span class="cDef14" title="this">This</span>)</span> (?!and not that )<span class="cDef0">(<span class="cDef27" title="matches">will match</span>)</span>)</p><p>MATCH : <span class="cDef14" title="this">This</span> <span class="cDef27" title="matches">will match</span></p>
-
-=end html
 
 =head1 DESCRIPTION
 
@@ -258,7 +260,7 @@ This is alpha code and not extensively tested. Use with care!
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008 Niels van Dijke L<mailto:CpanDotOrgAtPerlboyDotNet> L<http://PerlBoy.net>
+Copyright (c) 2008-2011 Niels van Dijke L<mailto:CpanDotOrgAtPerlboyDotNet> L<http://PerlBoy.net>
 All rights reserved. This program is free software.
 
 You may distribute under the terms of either the GNU General Public

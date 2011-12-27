@@ -3,8 +3,11 @@
 
 #########################
 
+use strict;
+use warnings;
+
 use Test;
-BEGIN { plan tests => 4, todo => [] };
+BEGIN { plan tests => 5, todo => [] };
 use Regexp::HTMLify;
 1 && ok(1); # If we made it this far, we're ok.
 
@@ -14,8 +17,16 @@ use Regexp::HTMLify;
 # its man page ( perldoc Test ) for help writing this test script.
 
 2 && ok(HTMLifyGetColormapCSS() ne '');
-3 && ok(HTMLifyRE(qr((.))) eq q[(?-xism:<span class="cDef0">(<span class="cDef14" >.</span>)</span>)]);
+
+my @qr;
+$_ = qr(_QR_COMPILE_TEST_);
+if (m#(.*)_QR_COMPILE_TEST_(.*)#) {
+  @qr = ($1,$2);
+}
+3 && ok(scalar @qr == 2);
+
+4 && ok(HTMLifyRE(qr((.))) eq qq[$qr[0]<span class="cDef0">(<span class="cDef14" >.</span>)</span>$qr[1]]);
 
 $_ = 'test';
 $_ =~ m#(test)#;
-ok(HTMLifyREmatches($_) eq q[<span class="cDef14" >test</span>]);
+5 && ok(HTMLifyREmatches($_) eq q[<span class="cDef14" >test</span>]);
